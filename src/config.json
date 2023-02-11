@@ -1,0 +1,17 @@
+{
+  "wordsFilePath": "data/words.json",
+  "levelsFilePath": "data/levels.json",
+  "translationsFilePath": "data/translations.json",
+  "historyFilePath": "data/history.json",
+  "targetLanguageCode": "ru",
+  "wordsMessage": {
+    "uniqueDispatchesCount": 365,
+    "pickLevelsAndCount": {
+      "a1": 2,
+      "a2": 2,
+      "b1": 2,
+      "b2": 2,
+      "c1": 2
+    }
+  }
+}

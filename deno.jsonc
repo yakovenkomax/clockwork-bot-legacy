@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "bot": "deno run --allow-read --allow-write --allow-env --allow-net src/bot/main.ts",
+    "generate": "deno run --allow-read --allow-write --allow-env --allow-net src/dataGeneration/main.ts"
+  }
+}
