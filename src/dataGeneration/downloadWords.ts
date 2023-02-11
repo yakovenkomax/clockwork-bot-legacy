@@ -1,6 +1,6 @@
 import { DOMParser } from 'https://esm.sh/linkedom';
 import { Level } from '../types/enums.type.ts';
-import { ConfigData } from '../types/files.type.ts';
+import { ConfigData, LevelData } from '../types/files.type.ts';
 import { readJson } from '../utils/readJson.ts';
 import { writeJson } from '../utils/writeJson.ts';
 
@@ -33,12 +33,14 @@ export const downloadWords = async () => {
 
         return acc;
       }, {});
-      const sortedLevelKeys = Object.keys(wordsByLevels).sort((a, b) => a.localeCompare(b, 'en'))
+      const sortedLevelKeys = Object.keys(wordsByLevels).sort(
+        (a, b) => a.localeCompare(b, 'en')
+      ) as Array<Level>;
       const wordsBySortedLevels = sortedLevelKeys.reduce((acc, key) => {
         acc[key] = wordsByLevels[key];
 
         return acc;
-      }, {});
+      }, {} as LevelData);
 
       writeJson(levelsFilePath, wordsBySortedLevels);
       writeJson(wordsFilePath, nonDuplicateWords);
