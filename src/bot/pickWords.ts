@@ -32,7 +32,13 @@ export const pickWords: PickWords = (params) => {
   const levelKeys = Object.keys(pickLevelsAndCount) as Array<Level>;
   const pickedWords = levelKeys.reduce((acc: Array<string>, level) => {
     const pickCount = pickLevelsAndCount[level as Level];
-    const currentLevelWhiteList = levels[level].filter(word => wordsWhitelist.includes(word));
+    const levelWords = levels[level];
+
+    if (!levelWords) {
+      return acc;
+    }
+
+    const currentLevelWhiteList = levelWords.filter(word => wordsWhitelist.includes(word));
 
     for (let i = 0; i < pickCount; i++) {
       const randomIndex = Math.floor(Math.random() * currentLevelWhiteList.length);
