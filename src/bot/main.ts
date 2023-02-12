@@ -61,6 +61,7 @@ bot.on(UpdateType.Message, async ({ message }) => {
       chat_id: TELEGRAM_CHAT_ID,
       text: wordMessage,
       parse_mode: 'MarkdownV2',
+      disable_web_page_preview: true,
     });
   }
 });
