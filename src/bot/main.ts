@@ -5,6 +5,7 @@ import { readJson } from '../utils/readJson.ts';
 import { writeJson } from '../utils/writeJson.ts';
 import { pickWords } from './pickWords.ts';
 import { formatWordsMessage } from './formatWordsMessage.ts';
+import { pickTranslations } from './pickTranslations.ts';
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN');
 const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_CHAT_ID');
@@ -47,9 +48,13 @@ const pickedWords = pickWords({
   uniqueDispatchesCount,
 });
 
-const wordMessage = formatWordsMessage({
-  words: pickedWords,
+const pickedTranslations = pickTranslations({
+  pickedWords,
   translations,
+})
+
+const wordMessage = formatWordsMessage({
+  pickedTranslations,
   targetLanguageCode,
 });
 

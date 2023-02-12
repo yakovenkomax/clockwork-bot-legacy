@@ -1,3 +1,5 @@
+import { MAIN_TRANSLATION_KEY } from '../types/files.type.ts';
+
 type TranslateWord = (params: { word: string, from: string, to: string }) => Promise<any>;
 
 export const translateWord: TranslateWord = async (params) => {
@@ -19,7 +21,7 @@ export const translateWord: TranslateWord = async (params) => {
 
     const restructuredData = {
       [word]: {
-        main: result,
+        [MAIN_TRANSLATION_KEY]: result,
         ...translationsWithoutReversed
       },
     };

@@ -1,7 +1,7 @@
 import { writeJson } from '../utils/writeJson.ts';
 import { translateWord } from './translateWord.ts';
 import { readJson } from '../utils/readJson.ts';
-import { ConfigData, TranslationsData } from '../types/files.type.ts';
+import { ConfigData, MAIN_TRANSLATION_KEY, TranslationsData } from '../types/files.type.ts';
 
 const SAVE_AFTER_SUCCESSFUL_TRANSLATIONS_COUNT = 10;
 export const translateWords = (words: Array<string>) => {
@@ -47,7 +47,7 @@ export const translateWords = (words: Array<string>) => {
     })
 
     if (translatedWord) {
-      console.log(`${words.indexOf(nextUntranslatedWord) + 1}/${words.length} ${nextUntranslatedWord} - ${translatedWord[nextUntranslatedWord].main}`);
+      console.log(`${words.indexOf(nextUntranslatedWord) + 1}/${words.length} ${nextUntranslatedWord} - ${translatedWord[nextUntranslatedWord][MAIN_TRANSLATION_KEY]}`);
       wordsInTranslation.delete(nextUntranslatedWord)
 
       translationsData = {
