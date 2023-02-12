@@ -21,14 +21,15 @@ export const downloadWords = async () => {
       const document = new DOMParser().parseFromString(body, 'text/html');
 
       const wordsListItems = [...document.querySelectorAll('.top-g li')];
-      const words = wordsListItems.map(item => item.dataset.hw);
+      const words = wordsListItems.map(item => item.children.item(0).innerText);
       const nonDuplicateWords = [...new Set(words)];
       const wordsByLevels = wordsListItems.reduce((acc, item) => {
-        const { hw: word, ox5000: level } = item.dataset;
+        const word = item.children.item(0).innerText;
+        const { ox5000: level, ox3000: secondaryLevel } = item.dataset;
         const isDuplicate = Object.keys(acc).find(level => acc[level].includes(word));
 
         if (!isDuplicate) {
-          acc[level || FALLBACK_LEVEL] = [...(acc[level] || []), word];
+          acc[level || secondaryLevel || FALLBACK_LEVEL] = [...(acc[level] || []), word];
         }
 
         return acc;
