@@ -1,10 +1,17 @@
 import { writeJson } from '../utils/writeJson.ts';
 import { translateWord } from './translateWord.ts';
 import { readJson } from '../utils/readJson.ts';
-import { ConfigData, MAIN_TRANSLATION_KEY, TranslationsData } from '../types/files.type.ts';
+import { ConfigData, TranslationsData } from '../types/files.type.ts';
 
 const SAVE_AFTER_SUCCESSFUL_TRANSLATIONS_COUNT = 10;
-export const translateWords = (words: Array<string>) => {
+
+type TranslateWords = (params: {
+  words: string[],
+  translateApiUrl: string,
+}) => void;
+
+export const translateWords: TranslateWords = (params) => {
+  const { words, translateApiUrl } = params;
   const config: ConfigData = readJson('src/config.json');
   const { translationsFilePath, targetLanguageCode } = config;
 
@@ -40,19 +47,20 @@ export const translateWords = (words: Array<string>) => {
 
     wordsInTranslation.add(nextUntranslatedWord);
 
-    const translatedWord = await translateWord({
+    const wordTranslation = await translateWord({
       word: nextUntranslatedWord,
       from: 'en',
       to: targetLanguageCode,
+      translateApiUrl,
     })
 
-    if (translatedWord) {
-      console.log(`${words.indexOf(nextUntranslatedWord) + 1}/${words.length} ${nextUntranslatedWord} - ${translatedWord[nextUntranslatedWord][MAIN_TRANSLATION_KEY]}`);
+    if (wordTranslation) {
+      console.log(`${words.indexOf(nextUntranslatedWord) + 1}/${words.length} ${nextUntranslatedWord} - ${wordTranslation.main}`);
       wordsInTranslation.delete(nextUntranslatedWord)
 
       translationsData = {
         ...translationsData,
-        ...translatedWord,
+        [nextUntranslatedWord]: wordTranslation,
       };
 
       progressCount += 1;

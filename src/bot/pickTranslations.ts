@@ -1,5 +1,5 @@
 import { FrequencyWeight, PartOfSpeech } from '../types/enums.type.ts';
-import { MAIN_TRANSLATION_KEY, TranslationsData } from '../types/files.type.ts';
+import { PartsOfSpeechTranslations, TranslationsData } from '../types/files.type.ts';
 
 type PickTranslations = (params: {
   pickedWords: Array<string>;
@@ -10,20 +10,28 @@ export const pickTranslations: PickTranslations = (params) => {
   const { pickedWords, translations } = params;
 
   const pickedTranslations = pickedWords.reduce((acc, word) => {
-    const translationEntries = translations[word];
-    const partsOfSpeech = Object.keys(translationEntries).filter(key => key !== MAIN_TRANSLATION_KEY) as PartOfSpeech[];
+    const partsOfSpeechTranslations = translations[word].partsOfSpeech;
+
+    if (!partsOfSpeechTranslations) {
+      return {
+        ...acc,
+        [word]: translations[word],
+      }
+    }
+
+    const partsOfSpeech = Object.keys(partsOfSpeechTranslations) as Array<PartOfSpeech>;
     const partsOfSpeechSortedTranslations = partsOfSpeech.reduce((acc, partOfSpeech) => ({
       ...acc,
-      [partOfSpeech]: translationEntries[partOfSpeech].sort(
+      [partOfSpeech]: partsOfSpeechTranslations[partOfSpeech].sort(
         (a, b) => FrequencyWeight[b.frequency] - FrequencyWeight[a.frequency]
       )
-    }), {});
+    }), {} as PartsOfSpeechTranslations);
 
     return {
       ...acc,
       [word]: {
-        [MAIN_TRANSLATION_KEY]: translationEntries[MAIN_TRANSLATION_KEY],
-        ...partsOfSpeechSortedTranslations,
+        ...translations[word],
+        partsOfSpeech: partsOfSpeechSortedTranslations
       },
     };
   }, {});

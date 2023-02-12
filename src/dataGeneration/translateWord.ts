@@ -1,32 +1,53 @@
-import { MAIN_TRANSLATION_KEY } from '../types/files.type.ts';
+import {
+  PartOfSpeechTranslation,
+  PartsOfSpeechTranslations,
+  Translation
+} from '../types/files.type.ts';
+import { PartOfSpeech } from '../types/enums.type.ts';
+import { RawTranslationData } from '../types/network.type.ts';
 
-type TranslateWord = (params: { word: string, from: string, to: string }) => Promise<any>;
+type TranslateWord = (params: {
+  word: string,
+  from: string,
+  to: string,
+  translateApiUrl: string,
+}) => Promise<Translation | undefined>;
 
 export const translateWord: TranslateWord = async (params) => {
-  const { word, from, to } = params;
+  const { word, from, to, translateApiUrl } = params;
 
   try {
-    const res = await fetch(`https://t.song.work/api?text=${word}&from=${from}&to=${to}`);
-    const data = await res.json();
+    const res = await fetch(`${translateApiUrl}/api?text=${word}&from=${from}&to=${to}`);
+    const data: RawTranslationData = await res.json();
+
+    if ('statusCode' in data) {
+      return undefined;
+    }
 
     const { result, translations } = data;
-    const translationsWithoutReversed = Object.keys(translations).reduce((acc, key) => {
-      acc[key] = translations[key].map(item => ({
+
+    if (!translations) {
+      return {
+        main: result,
+      };
+    }
+
+    const partsOfSpeech = Object.keys(translations) as PartOfSpeech[];
+    const translationsWithoutReversed = partsOfSpeech.reduce((acc, partOfSpeech) => {
+      acc[partOfSpeech] = translations[partOfSpeech].map((item: PartOfSpeechTranslation) => ({
         translation: item.translation,
         frequency: item.frequency,
       }));
 
       return acc;
-    }, {});
+    }, {} as PartsOfSpeechTranslations);
 
-    const restructuredData = {
-      [word]: {
-        [MAIN_TRANSLATION_KEY]: result,
+    return {
+      main: result,
+      partsOfSpeech: {
         ...translationsWithoutReversed
       },
     };
-
-    return restructuredData;
   } catch (error) {
     console.error(`An error occurred during translation of the word "${word}": `, error);
 

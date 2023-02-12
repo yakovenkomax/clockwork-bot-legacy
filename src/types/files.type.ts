@@ -26,15 +26,20 @@ export type HistoryData = Array<{
   words: Array<string>;
 }>;
 
-export const MAIN_TRANSLATION_KEY = 'main';
+export type PartOfSpeechTranslation = {
+  translation: string,
+  frequency: Frequency,
+}
+
+export type PartsOfSpeechTranslations = {
+  [key in PartOfSpeech]: Array<PartOfSpeechTranslation>;
+}
+
+export type Translation = {
+  main: string;
+  partsOfSpeech?: PartsOfSpeechTranslations;
+};
 
 export type TranslationsData = {
-  [key: string]: {
-    [MAIN_TRANSLATION_KEY]: string;
-  } & {
-    [key in PartOfSpeech]: Array<{
-      translation: string,
-      frequency: Frequency,
-    }>;
-  }
+  [word: string]: Translation;
 }

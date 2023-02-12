@@ -1,4 +1,4 @@
-import { MAIN_TRANSLATION_KEY, TranslationsData } from '../types/files.type.ts';
+import { TranslationsData } from '../types/files.type.ts';
 import { PartOfSpeech, PartOfSpeechAbbreviation } from '../types/enums.type.ts';
 
 const getGoogleTranslateLink = (word: string, targetLanguageCode: string) => {
@@ -20,11 +20,17 @@ export const formatWordsMessage: FormatWordsMessage = (params): string => {
   const { pickedTranslations, targetLanguageCode } = params;
 
   const wordsMessage = Object.keys(pickedTranslations).map(word => {
-    const translationEntries = pickedTranslations[word];
-    const mainLine = getMainLine(word, translationEntries.main, targetLanguageCode);
-    const partsOfSpeech = Object.keys(translationEntries).filter(key => key !== MAIN_TRANSLATION_KEY) as PartOfSpeech[];
+    const currentWordTranslation = pickedTranslations[word];
+    const mainLine = getMainLine(word, currentWordTranslation.main, targetLanguageCode);
+    const partsOfSpeechTranslations = currentWordTranslation.partsOfSpeech;
+
+    if (typeof partsOfSpeechTranslations === 'undefined') {
+      return mainLine;
+    }
+
+    const partsOfSpeech = Object.keys(partsOfSpeechTranslations) as PartOfSpeech[];
     const partsOfSpeechLines = partsOfSpeech.map(partOfSpeech => {
-      const translationWords = translationEntries[partOfSpeech].map(entry => entry.translation);
+      const translationWords = partsOfSpeechTranslations[partOfSpeech].map(entry => entry.translation);
 
       return getPartOfSpeechLine(partOfSpeech, translationWords);
     });
