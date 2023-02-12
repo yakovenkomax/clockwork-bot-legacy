@@ -5,10 +5,10 @@ const getGoogleTranslateLink = (word: string, targetLanguageCode: string) => {
   return `[${word}](https://translate.google.com/?sl=en&tl=${targetLanguageCode}&text=${word}&op=translate)`;
 };
 const getMainLine = (word: string, translation: string, targetLanguageCode: string) => {
-  return `*${getGoogleTranslateLink(word, targetLanguageCode)}* \\- ${translation}`;
+  return `*${getGoogleTranslateLink(word, targetLanguageCode)}* – ${translation}`;
 };
 const getPartOfSpeechLine = (partOfSpeech: PartOfSpeech, translationWords: Array<string>) => {
-  return `  _${PartOfSpeechAbbreviation[partOfSpeech]}\\._  ${translationWords.join(', ')}`;
+  return `  _${PartOfSpeechAbbreviation[partOfSpeech]}._  ${translationWords.join(', ')}`;
 };
 
 type FormatWordsMessage = (params: {
@@ -32,5 +32,7 @@ export const formatWordsMessage: FormatWordsMessage = (params): string => {
     return [mainLine, ...partsOfSpeechLines].join('\n');
   }).join('\n\n');
 
-  return wordsMessage;
+  const sanitizedWordsMessage = wordsMessage.replace(/-/g, '\\-').replace(/\./g, '\\.');
+
+  return sanitizedWordsMessage;
 }
