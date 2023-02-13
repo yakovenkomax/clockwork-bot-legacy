@@ -39,6 +39,7 @@ export const translateWords: TranslateWords = (params) => {
 
     if (!nextUntranslatedWord) {
       clearInterval(translationInterval);
+      writeJson(translationsFilePath, translationsData);
 
       console.log('All words are translated.')
 
