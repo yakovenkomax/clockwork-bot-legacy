@@ -8,16 +8,25 @@ export type ConfigData = {
   targetLanguageCode: string,
   wordsMessage: {
     uniqueDispatchesCount: number,
-    pickLevelsAndCount: {
+    wordPickCount: {
       [key in Level]: number;
     },
+    translationPickCount: {
+      maxPerPartOfSpeech: number,
+      minPerPartOfSpeech: {
+        [key in Frequency]: number;
+      },
+      maxPerFrequency: {
+        [key in Frequency]: number;
+      }
+    }
   }
 }
 
 export type WordData = Array<string>;
 
 export type LevelData = {
-  [key in Level]: Array<string>;
+  [key in Level]?: Array<string>;
 }
 
 export type HistoryData = Array<{
@@ -32,7 +41,7 @@ export type PartOfSpeechTranslation = {
 }
 
 export type PartsOfSpeechTranslations = {
-  [key in PartOfSpeech]: Array<PartOfSpeechTranslation>;
+  [key in PartOfSpeech]?: Array<PartOfSpeechTranslation>;
 }
 
 export type Translation = {

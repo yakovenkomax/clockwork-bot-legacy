@@ -12,12 +12,12 @@ type PickWords = (params: {
   translations: TranslationsData,
   history: HistoryData,
   levels: LevelData,
-  pickLevelsAndCount: ConfigData['wordsMessage']['pickLevelsAndCount'],
+  wordPickCount: ConfigData['wordsMessage']['wordPickCount'],
   uniqueDispatchesCount: number,
 }) => Array<string>;
 
 export const pickWords: PickWords = (params) => {
-  const { words, translations, history, levels, pickLevelsAndCount, uniqueDispatchesCount } = params;
+  const { words, translations, history, levels, wordPickCount, uniqueDispatchesCount } = params;
 
   const wordsWithTranslations = words.filter(word => translations[word]);
   const wordsWhitelist = wordsWithTranslations.filter(word => {
@@ -29,9 +29,9 @@ export const pickWords: PickWords = (params) => {
     return !blackList.includes(word);
   });
 
-  const levelKeys = Object.keys(pickLevelsAndCount) as Array<Level>;
+  const levelKeys = Object.keys(wordPickCount) as Array<Level>;
   const pickedWords = levelKeys.reduce((acc: Array<string>, level) => {
-    const pickCount = pickLevelsAndCount[level as Level];
+    const pickCount = wordPickCount[level as Level];
     const levelWords = levels[level];
 
     if (!levelWords) {

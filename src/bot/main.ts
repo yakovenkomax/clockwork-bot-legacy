@@ -24,7 +24,7 @@ if (!TELEGRAM_CHAT_ID) {
 
 const config: ConfigData = readJson('src/config.json');
 const { historyFilePath, levelsFilePath, wordsFilePath, translationsFilePath, targetLanguageCode, wordsMessage } = config;
-const { pickLevelsAndCount, uniqueDispatchesCount } = wordsMessage;
+const { wordPickCount, uniqueDispatchesCount, translationPickCount } = wordsMessage;
 
 try {
   Deno.statSync(historyFilePath)
@@ -44,13 +44,14 @@ const pickedWords = pickWords({
   translations,
   history,
   levels,
-  pickLevelsAndCount,
+  wordPickCount,
   uniqueDispatchesCount,
 });
 
 const pickedTranslations = pickTranslations({
   pickedWords,
   translations,
+  translationPickCount,
 })
 
 const wordMessage = formatWordsMessage({
