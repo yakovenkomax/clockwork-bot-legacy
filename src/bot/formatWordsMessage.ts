@@ -1,5 +1,5 @@
 import { TranslationsData } from '../types/files.type.ts';
-import { PartOfSpeech, PartOfSpeechAbbreviation } from '../types/enums.type.ts';
+import { Frequency, FrequencyWeight, PartOfSpeech, PartOfSpeechAbbreviation } from '../types/enums.type.ts';
 
 const getGoogleTranslateLink = (word: string, targetLanguageCode: string) => {
   return `[${word}](https://translate.google.com/?sl=en&tl=${targetLanguageCode}&text=${word}&op=translate)`;
@@ -29,11 +29,33 @@ export const formatWordsMessage: FormatWordsMessage = (params): string => {
     }
 
     const partsOfSpeech = Object.keys(partsOfSpeechTranslations) as PartOfSpeech[];
-    const partsOfSpeechLines = partsOfSpeech.map(partOfSpeech => {
-      const translationWords = partsOfSpeechTranslations[partOfSpeech].map(entry => entry.translation);
+    const partsOfSpeechLines = partsOfSpeech.reduce((acc, partOfSpeech) => {
+      const translationsByFrequency = partsOfSpeechTranslations[partOfSpeech];
 
-      return getPartOfSpeechLine(partOfSpeech, translationWords);
-    });
+      if (!translationsByFrequency) {
+        return acc;
+      }
+
+      const frequencyKeys = Object.keys(translationsByFrequency) as Array<Frequency>;
+      const sortedFrequencyKeys = frequencyKeys.sort((a, b) => FrequencyWeight[b] - FrequencyWeight[a]);
+      const translationWords = sortedFrequencyKeys.reduce((acc, frequency) => {
+        const translationsForFrequency = translationsByFrequency[frequency];
+
+        if (!translationsForFrequency) {
+          return acc;
+        }
+
+        acc.push(...translationsForFrequency);
+
+        return acc;
+      }, [] as Array<string>);
+
+      const line = getPartOfSpeechLine(partOfSpeech, translationWords);
+
+      acc.push(line);
+
+      return acc;
+    }, [] as Array<string>);
 
     return [mainLine, ...partsOfSpeechLines].join('\n');
   }).join('\n\n');

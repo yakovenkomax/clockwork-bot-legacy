@@ -1,6 +1,6 @@
 import {
-  PartOfSpeechTranslation,
-  PartsOfSpeechTranslations,
+  TranslationsByFrequency,
+  TranslationsByPartOfSpeech,
   Translation
 } from '../types/files.type.ts';
 import { PartOfSpeech } from '../types/enums.type.ts';
@@ -33,19 +33,23 @@ export const translateWord: TranslateWord = async (params) => {
     }
 
     const partsOfSpeech = Object.keys(translations) as PartOfSpeech[];
-    const translationsWithoutReversed = partsOfSpeech.reduce((acc, partOfSpeech) => {
-      acc[partOfSpeech] = translations[partOfSpeech].map((item: PartOfSpeechTranslation) => ({
-        translation: item.translation,
-        frequency: item.frequency,
-      }));
+    const partOfSpeechTranslations = partsOfSpeech.reduce((acc, partOfSpeech) => {
+      const currentPartOfSpeechTranslations = translations[partOfSpeech];
+      const usedFrequencies = [...new Set(currentPartOfSpeechTranslations.map(item => item.frequency))];
+
+      acc[partOfSpeech] = usedFrequencies.reduce((acc, frequency) => {
+        acc[frequency] = currentPartOfSpeechTranslations.filter(item => item.frequency === frequency).map(item => item.translation);
+
+        return acc;
+      }, {} as TranslationsByFrequency);
 
       return acc;
-    }, {} as PartsOfSpeechTranslations);
+    }, {} as TranslationsByPartOfSpeech);
 
     return {
       main: result,
       partsOfSpeech: {
-        ...translationsWithoutReversed
+        ...partOfSpeechTranslations
       },
     };
   } catch (error) {

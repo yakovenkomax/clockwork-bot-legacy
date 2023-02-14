@@ -35,18 +35,17 @@ export type HistoryData = Array<{
   words: Array<string>;
 }>;
 
-export type PartOfSpeechTranslation = {
-  translation: string,
-  frequency: Frequency,
+export type TranslationsByFrequency = {
+  [key in Frequency]?: Array<string>;
 }
 
-export type PartsOfSpeechTranslations = {
-  [key in PartOfSpeech]?: Array<PartOfSpeechTranslation>;
+export type TranslationsByPartOfSpeech = {
+  [key in PartOfSpeech]?: TranslationsByFrequency;
 }
 
 export type Translation = {
   main: string;
-  partsOfSpeech?: PartsOfSpeechTranslations;
+  partsOfSpeech?: TranslationsByPartOfSpeech;
 };
 
 export type TranslationsData = {
