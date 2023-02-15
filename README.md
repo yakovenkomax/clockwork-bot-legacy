@@ -20,3 +20,7 @@ A Telegram bot to learn the most popular English words.
 ### Bot
 
 1. Run `deno task bot` to start the bot;
+
+### Tests
+
+1. Run `deno test` to run unit tests;

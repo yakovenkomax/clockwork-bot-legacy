@@ -9,7 +9,7 @@ type RemoveWordFromAllTranslationsParams = {
   wordToRemove: string
 }
 
-const removeWordFromAllTranslations = (params: RemoveWordFromAllTranslationsParams) => {
+export const removeWordFromAllTranslations = (params: RemoveWordFromAllTranslationsParams) => {
   const { translationsByFrequency, wordToRemove } = params;
   const frequencyKeys = Object.keys(translationsByFrequency) as Array<Frequency>;
 
@@ -20,9 +20,15 @@ const removeWordFromAllTranslations = (params: RemoveWordFromAllTranslationsPara
       return acc;
     }
 
+    const filteredTranslations = translationsForFrequency.filter(translation => translation !== wordToRemove);
+
+    if (filteredTranslations.length === 0) {
+      return acc;
+    }
+
     return {
       ...acc,
-      [frequency]: translationsForFrequency.filter(translation => translation !== wordToRemove),
+      [frequency]: filteredTranslations,
     }
   }, {} as TranslationsByFrequency);
 }
