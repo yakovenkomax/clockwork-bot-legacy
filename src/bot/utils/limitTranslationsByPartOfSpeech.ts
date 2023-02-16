@@ -22,6 +22,10 @@ export const limitTranslationsByPartOfSpeech = (params: LimitTranslationsByPartO
 
     const translationsCount = translationsForFrequency.length;
 
+    if (translationsCount === 0) {
+      return acc;
+    }
+
     if (totalCount + translationsCount <= maxPerPartOfSpeech) {
       totalCount += translationsCount;
       acc[frequency] = translationsForFrequency;
