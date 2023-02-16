@@ -5,6 +5,15 @@
   "historyFilePath": "data/history.json",
   "targetLanguageCode": "ru",
   "wordsMessage": {
+    "schedule": [
+      { "weekday": "monday", "hour": 10, "minute": 0 },
+      { "weekday": "tuesday", "hour": 10, "minute": 0 },
+      { "weekday": "wednesday", "hour": 10, "minute": 0 },
+      { "weekday": "thursday", "hour": 10, "minute": 0 },
+      { "weekday": "friday", "hour": 10, "minute": 0 },
+      { "weekday": "saturday", "hour": 10, "minute": 0 },
+      { "weekday": "sunday", "hour": 10, "minute": 0 }
+    ],
     "uniqueDispatchesCount": 365,
     "wordPickCount": {
       "a1": 2,

@@ -1,18 +1,23 @@
-import { Frequency, Level, PartOfSpeech } from './enums.type.ts';
+import { Frequency, Level, PartOfSpeech, Weekday } from './enums.type.ts';
 
 export type ConfigData = {
-  wordsFilePath: string,
-  levelsFilePath: string,
-  translationsFilePath: string,
-  historyFilePath: string,
-  targetLanguageCode: string,
+  wordsFilePath: string;
+  levelsFilePath: string;
+  translationsFilePath: string;
+  historyFilePath: string;
+  targetLanguageCode: string;
   wordsMessage: {
-    uniqueDispatchesCount: number,
+    schedule: Array<{
+      weekday: Weekday;
+      hour: number;
+      minute: number;
+    }>,
+    uniqueDispatchesCount: number;
     wordPickCount: {
       [key in Level]: number;
     },
     translationPickCount: {
-      maxPerPartOfSpeech: number,
+      maxPerPartOfSpeech: number;
       minPerPartOfSpeech: {
         [key in Frequency]?: number;
       },

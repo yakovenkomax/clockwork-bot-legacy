@@ -1,4 +1,4 @@
-import { DOMParser } from 'https://esm.sh/linkedom';
+import { DOMParser } from 'https://esm.sh/linkedom@0.14.22';
 import { Level } from '../types/enums.type.ts';
 import { ConfigData, LevelData } from '../types/files.type.ts';
 import { readJson } from '../utils/readJson.ts';

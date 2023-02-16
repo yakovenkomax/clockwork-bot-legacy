@@ -3,9 +3,8 @@ import { TelegramBot, UpdateType } from 'https://deno.land/x/telegram_bot_api@0.
 import { ConfigData, HistoryData, LevelData, TranslationsData, WordData } from '../types/files.type.ts';
 import { readJson } from '../utils/readJson.ts';
 import { writeJson } from '../utils/writeJson.ts';
-import { pickWords } from './pickWords.ts';
-import { formatWordsMessage } from './formatWordsMessage.ts';
-import { pickTranslations } from './pickTranslations.ts';
+import { getWordsMessage } from './getWordsMessage.ts';
+import { scheduleWeeklyFunctionCall } from './scheduleWeeklyFunctionCall.ts';
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN');
 const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_CHAT_ID');
@@ -24,7 +23,7 @@ if (!TELEGRAM_CHAT_ID) {
 
 const config: ConfigData = readJson('src/config.json');
 const { historyFilePath, levelsFilePath, wordsFilePath, translationsFilePath, targetLanguageCode, wordsMessage } = config;
-const { wordPickCount, uniqueDispatchesCount, translationPickCount } = wordsMessage;
+const { wordPickCount, uniqueDispatchesCount, translationPickCount, schedule } = wordsMessage;
 
 try {
   Deno.statSync(historyFilePath)
@@ -39,36 +38,32 @@ const levels: LevelData = readJson(levelsFilePath);
 const words: WordData = readJson(wordsFilePath);
 const translations: TranslationsData = readJson(translationsFilePath);
 
-const pickedWords = pickWords({
-  words,
-  translations,
-  history,
-  levels,
-  wordPickCount,
-  uniqueDispatchesCount,
-});
-
-const pickedTranslations = pickTranslations({
-  pickedWords,
-  translations,
-  translationPickCount,
-})
-
-const wordMessage = formatWordsMessage({
-  pickedTranslations,
-  targetLanguageCode,
-});
-
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
 
-bot.on(UpdateType.Message, async ({ message }) => {
+bot.on(UpdateType.Message, ({ message }) => {
   if (message.text === '/start') {
-    await bot.sendMessage({
-      chat_id: TELEGRAM_CHAT_ID,
-      text: wordMessage,
-      parse_mode: 'MarkdownV2',
-      disable_web_page_preview: true,
-    });
+    scheduleWeeklyFunctionCall({
+      schedule,
+      fn: () => {
+        const wordsMessage = getWordsMessage({
+          words,
+          translations,
+          history,
+          levels,
+          wordPickCount,
+          uniqueDispatchesCount,
+          translationPickCount,
+          targetLanguageCode,
+        });
+
+        bot.sendMessage({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: wordsMessage,
+          parse_mode: 'MarkdownV2',
+          disable_web_page_preview: true,
+        });
+      },
+    })
   }
 });
 
