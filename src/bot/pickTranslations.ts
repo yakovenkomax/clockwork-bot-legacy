@@ -1,111 +1,12 @@
-import { Frequency, FrequencyWeight, PartOfSpeech } from '../types/enums.type.ts';
+import { PartOfSpeech } from '../types/enums.type.ts';
 import {
   ConfigData, TranslationsByFrequency, TranslationsByPartOfSpeech,
   TranslationsData
 } from '../types/files.type.ts';
-
-type RemoveWordFromAllTranslationsParams = {
-  translationsByFrequency: TranslationsByFrequency,
-  wordToRemove: string
-}
-
-export const removeWordFromAllTranslations = (params: RemoveWordFromAllTranslationsParams) => {
-  const { translationsByFrequency, wordToRemove } = params;
-  const frequencyKeys = Object.keys(translationsByFrequency) as Array<Frequency>;
-
-  return frequencyKeys.reduce((acc, frequency) => {
-    const translationsForFrequency = translationsByFrequency[frequency];
-
-    if (!translationsForFrequency) {
-      return acc;
-    }
-
-    const filteredTranslations = translationsForFrequency.filter(translation => translation !== wordToRemove);
-
-    if (filteredTranslations.length === 0) {
-      return acc;
-    }
-
-    return {
-      ...acc,
-      [frequency]: filteredTranslations,
-    }
-  }, {} as TranslationsByFrequency);
-}
-
-type LimitTranslationsByFrequencyParams = {
-  translationsByFrequency: TranslationsByFrequency,
-  minPerPartOfSpeech: ConfigData['wordsMessage']['translationPickCount']['minPerPartOfSpeech'],
-  maxPerFrequency: ConfigData['wordsMessage']['translationPickCount']['maxPerFrequency'],
-}
-
-const limitTranslationsByFrequency = (params: LimitTranslationsByFrequencyParams) => {
-  const { translationsByFrequency, minPerPartOfSpeech, maxPerFrequency } = params;
-
-  let isEnoughToInclude = false;
-
-  const frequencyKeys = Object.keys(translationsByFrequency) as Array<Frequency>;
-  const limitedTranslationsByFrequency = frequencyKeys.reduce((acc, frequency) => {
-    const translationsForFrequency = translationsByFrequency[frequency];
-
-    if (!translationsForFrequency) {
-      return acc;
-    }
-
-    const limitedTranslations = translationsForFrequency.slice(0, maxPerFrequency[frequency]);
-
-    acc[frequency] = limitedTranslations;
-
-    isEnoughToInclude = isEnoughToInclude || limitedTranslations.length >= minPerPartOfSpeech[frequency];
-
-    return acc;
-  }, [] as TranslationsByFrequency);
-
-  if (!isEnoughToInclude) {
-    return undefined;
-  }
-
-  return limitedTranslationsByFrequency;
-}
-
-type LimitTranslationsByPartOfSpeechParams = {
-  translationsByFrequency: TranslationsByFrequency,
-  maxPerPartOfSpeech: ConfigData['wordsMessage']['translationPickCount']['maxPerPartOfSpeech'],
-}
-
-const limitTranslationsByPartOfSpeech = (params: LimitTranslationsByPartOfSpeechParams) => {
-  const { translationsByFrequency, maxPerPartOfSpeech } = params;
-  let totalCount = 0;
-
-  const frequencyKeys = Object.keys(translationsByFrequency) as Array<Frequency>;
-  const sortedFrequencyKeys = frequencyKeys.sort((a, b) => FrequencyWeight[b] - FrequencyWeight[a]);
-
-  return sortedFrequencyKeys.reduce((acc, frequency) => {
-    const translationsForFrequency = translationsByFrequency[frequency];
-
-    if (!translationsForFrequency) {
-      return acc;
-    }
-
-    const translationsCount = translationsForFrequency.length;
-
-    if (totalCount + translationsCount <= maxPerPartOfSpeech) {
-      totalCount += translationsCount;
-      acc[frequency] = translationsForFrequency;
-
-      return acc;
-    }
-
-    if (totalCount < maxPerPartOfSpeech) {
-      const translationsToInclude = translationsForFrequency.slice(0, maxPerPartOfSpeech - totalCount);
-
-      totalCount += translationsToInclude.length;
-      acc[frequency] = translationsToInclude;
-    }
-
-    return acc;
-  }, {} as TranslationsByFrequency);
-}
+import { removeWordFromAllTranslations } from './utils/removeWordFromAllTranslations.ts';
+import { limitTranslationsByFrequency } from './utils/limitTranslationsByFrequency.ts';
+import { isEnoughTranslationsToInclude } from './utils/isEnoughTranslationsToInclude.ts';
+import { limitTranslationsByPartOfSpeech } from './utils/limitTranslationsByPartOfSpeech.ts';
 
 type PickTranslations = (params: {
   pickedWords: Array<string>;
@@ -142,11 +43,15 @@ export const pickTranslations: PickTranslations = (params) => {
 
       translationsByFrequency = limitTranslationsByFrequency({
         translationsByFrequency,
-        minPerPartOfSpeech,
         maxPerFrequency,
       });
 
-      if (!translationsByFrequency) {
+      const isEnoughToInclude = isEnoughTranslationsToInclude({
+        translationsByFrequency,
+        minPerPartOfSpeech,
+      });
+
+      if (!isEnoughToInclude) {
         return acc;
       }
 

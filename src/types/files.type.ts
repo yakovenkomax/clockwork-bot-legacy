@@ -14,7 +14,7 @@ export type ConfigData = {
     translationPickCount: {
       maxPerPartOfSpeech: number,
       minPerPartOfSpeech: {
-        [key in Frequency]: number;
+        [key in Frequency]?: number;
       },
       maxPerFrequency: {
         [key in Frequency]: number;

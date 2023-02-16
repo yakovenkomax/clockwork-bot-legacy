@@ -1,5 +1,5 @@
 import { assertEquals } from 'https://deno.land/std@0.177.0/testing/asserts.ts';
-import { removeWordFromAllTranslations } from './pickTranslations.ts';
+import { removeWordFromAllTranslations } from './removeWordFromAllTranslations.ts';
 
 Deno.test('removeWordFromAllTranslations single', () => {
   assertEquals(removeWordFromAllTranslations({
@@ -42,7 +42,7 @@ Deno.test('removeWordFromAllTranslations partial', () => {
   });
 });
 
-Deno.test('removeWordFromAllTranslations single', () => {
+Deno.test('removeWordFromAllTranslations only', () => {
   assertEquals(removeWordFromAllTranslations({
     translationsByFrequency: {
       common: ['foo'],

@@ -17,8 +17,7 @@
       "maxPerPartOfSpeech": 6,
       "minPerPartOfSpeech": {
         "common": 1,
-        "uncommon": 1,
-        "rare": 999
+        "uncommon": 1
       },
       "maxPerFrequency": {
         "common": 3,
