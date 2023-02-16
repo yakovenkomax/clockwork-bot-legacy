@@ -17,7 +17,7 @@ export type ConfigData = {
         [key in Frequency]?: number;
       },
       maxPerFrequency: {
-        [key in Frequency]: number;
+        [key in Frequency]?: number;
       }
     }
   }

@@ -12,15 +12,24 @@ export const limitTranslationsByFrequency = (params: LimitTranslationsByFrequenc
   const frequencyKeys = Object.keys(translationsByFrequency) as Array<Frequency>;
   const limitedTranslationsByFrequency = frequencyKeys.reduce((acc, frequency) => {
     const translationsForFrequency = translationsByFrequency[frequency];
+    const limitPerFrequency = maxPerFrequency[frequency];
 
     if (!translationsForFrequency) {
       return acc;
     }
 
-    acc[frequency] = translationsForFrequency.slice(0, maxPerFrequency[frequency]);
+    let limitedTranslations = translationsForFrequency;
+
+    if (typeof limitPerFrequency === 'number') {
+      limitedTranslations = translationsForFrequency.slice(0, limitPerFrequency);
+    }
+
+    if (limitedTranslations.length > 0) {
+      acc[frequency] = limitedTranslations;
+    }
 
     return acc;
-  }, [] as TranslationsByFrequency);
+  }, {} as TranslationsByFrequency);
 
   return limitedTranslationsByFrequency;
 }
